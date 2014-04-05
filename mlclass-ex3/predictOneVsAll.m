@@ -30,11 +30,17 @@ X = [ones(m, 1) X];
 %       for each row.
 %       
 
+output = zeros(size(X,1),1);
 
+for c=1:num_labels,
+	theta = all_theta(c,:);
+	y = sigmoid(X*theta');
+	output = [output y];	
+end
 
-
-
-
+output = output(:,2:num_labels+1)';
+[x ix] = max(output);
+p=ix';
 
 % =========================================================================
 
