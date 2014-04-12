@@ -68,9 +68,11 @@ a2 = sigmoid(z2);
 a2 = [ones(m, 1) a2];
 z3 = a2*Theta2';
 a3 = sigmoid(z3);
+y_k = zeros(m,num_labels);
 
 for c=1:num_labels,
 	y_c = (y==c);
+	y_k(:,c) = y_c;
         output = a3(:,c);
 	J = J + sum(-y_c.*log(output)-(1-y_c).*log(1-output))/m;
 end
@@ -81,27 +83,12 @@ t2 = Theta2;
 t2(:,1)=0;
 J = J + lambda*(sum(sum(t1.^2)) + sum(sum(t2.^2)))/(2*m);
 
-
-for t=1:m,
-	a1_v = a1(t,:)';
- 	z2_v = z2(t,:)';
-	a2_v = a2(t,:)';
-	z3_v = z3(t,:)';
-	a3_v = a3(t,:)';
-	y_v = ([1:num_labels] == y(t))';
-
-	d3 = a3_v - y_v;
-	Theta2_grad = Theta2_grad + d3*a2_v';
-	z2_dv = a2_v.*(1-a2_v);
-	d2 = (Theta2'*d3).*z2_dv;
-	d2 = d2(2:end);
-	Theta1_grad = Theta1_grad + d2*a1_v';
-end
-
-
-Theta2_grad = Theta2_grad/m+lambda*t2/m;
-Theta1_grad = Theta1_grad/m+lambda*t1/m;
-
+d3 = a3 - y_k;
+Theta2_grad = (d3'*a2)/m+lambda*t2/m;
+z2_d = a2.*(1-a2);
+d2=(d3*Theta2).*z2_d;
+d2 = d2(:,2:end);
+Theta1_grad = (d2'*a1)/m+lambda*t1/m;
 
 % -------------------------------------------------------------
 
